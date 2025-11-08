@@ -1,0 +1,9 @@
+pgdata/
+**/node_modules/
+**/dist/
+**/.DS_Store
+**/*.log
+**/.env
+backend_go/bin/
+frontend_vue/.vite/
+frontend_vue/.eslintcache

@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:17
+    container_name: br_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: badminton_reservation_db
+    ports:
+      - "5430:5432"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d badminton_reservation_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - br_net
+
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend_go/Dockerfile
+    container_name: br_backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgres
+      DATABASE_NAME: badminton_reservation_db
+      JWT_SECRET: 7a9f3b8c2e1d4f6a5b9c8e2f1d3a7b9c4e6f8a1b3c5d7e9f2a4b6c8d0e1f3a5b7
+      APP_PORT: ":8000"
+      APP_ENV: docker
+    ports:
+      - "8000:8000"
+    networks:
+      - br_net
+
+  frontend:
+    build:
+      context: .
+      dockerfile: ./frontend_vue/Dockerfile
+    container_name: br_frontend
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_BASE_URL=http://backend:8000/api
+    ports:
+      - "5173:5173"
+    networks:
+      - br_net
+
+networks:
+  br_net:
+    driver: bridge
