@@ -43,7 +43,7 @@ func ResetAndSeedTimeSlots(db *gorm.DB) {
 	// 1. HARD RESET: Hapus SEMUA data timecourt lama
 	// Menggunakan Unscoped() untuk mengabaikan soft delete (hapus permanen)
 	// Atau pakai TRUNCATE agar bersih total dan reset ID (opsional)
-	err := db.Exec("TRUNCATE TABLE time_courts RESTART IDENTITY CASCADE").Error
+	err := db.Exec("TRUNCATE TABLE timeslots RESTART IDENTITY CASCADE").Error
 	if err != nil {
 		// Fallback jika Truncate gagal (misal karena constraint), pakai Delete biasa
 		db.Unscoped().Where("1 = 1").Delete(&models.Timeslot{})
@@ -75,8 +75,8 @@ func ResetAndSeedTimeSlots(db *gorm.DB) {
 
 				// Create Object
 				slot := models.Timeslot{
-					StartTime:    startTime.String(),
-					EndTime:      endTime.String(),
+					StartTime:    startTime.String()[:25],
+					EndTime:      endTime.String()[:25],
 					PriceWeekday: 50000,
 					PriceWeekend: 70000,
 				}
