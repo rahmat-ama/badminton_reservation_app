@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: badminton_reservation_db
     ports:
-      - "5430:5432"
+      - "127.0.0.1:5430:5432"
     volumes:
       - ./pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -39,7 +39,7 @@ services:
       APP_PORT: ":8000"
       APP_ENV: docker
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     networks:
       - br_net
 
@@ -47,13 +47,13 @@ services:
     build:
       context: .
       dockerfile: ./frontend_vue/Dockerfile
+      args:
+        VITE_API_BASE_URL: "https://badminton-app.rahmat-amalul.me/api"
     container_name: br_frontend
     depends_on:
       - backend
-    environment:
-      - VITE_API_BASE_URL=http://backend:8000/api
     ports:
-      - "5173:5173"
+      - "127.0.0.1:5173:80"
     networks:
       - br_net
 
