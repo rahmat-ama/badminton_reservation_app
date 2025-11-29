@@ -9,6 +9,7 @@ import (
 	"github.com/rahmat-ama/badminton_reservation/db"
 	"github.com/rahmat-ama/badminton_reservation/routes"
 	"github.com/rahmat-ama/badminton_reservation/seed"
+	"github.com/rahmat-ama/badminton_reservation/utils"
 )
 
 func main() {
@@ -20,11 +21,11 @@ func main() {
 	router := gin.Default()
 
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{
-					"http://localhost:5173", 
-					"http://localhost:8080",
-					"https://badminton-app.rahmat-amalul.me",
-					},
+		AllowOrigins: []string{
+			"http://localhost:5173",
+			"http://localhost:8080",
+			"https://badminton-app.rahmat-amalul.me",
+		},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "Accept"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -34,6 +35,8 @@ func main() {
 	routes.SetupRoutes(router)
 
 	seed.SeedDB()
+
+	utils.StartScheduler(db.GetDB())
 
 	log.Printf("App start %s, port %s", config.AppName, config.Port)
 	log.Printf("API Endpoint: http://localhost%s/api", config.Port)
